@@ -1,0 +1,74 @@
+---
+
+- name: playbook-registy
+  hosts: group_registry
+
+  vars:
+    cert_dir: '/etc/ssl/docker_registry'
+    cert_public: '{{ cert_dir }}/public.pem'
+    cert_private: '{{ cert_dir }}/private.key'
+    auth_dir: '/etc/docker/auth'
+    auth_file: '{{ auth_dir }}/htpasswd'
+    images_dir: '/mnt/docker_registry'
+
+  roles: 
+    - role: set-timezone
+    
+    - role: docker-install
+      vars: 
+        user_name: vagrant
+
+  tasks:
+
+    - name: install deps # needed for x509_certificate
+      become: true
+      ansible.builtin.apt:
+        state: present
+        pkg:
+          - 'python3-cryptography'
+
+    - name: Create dirs
+      become: true
+      ansible.builtin.file:
+        state: directory
+        path: '{{ item }}'
+      loop:
+        - '{{ images_dir }}'
+        - '{{ cert_dir }}'
+        - '{{ auth_dir }}'
+
+    - name: Generate private key
+      become: true
+      community.crypto.openssl_privatekey:
+        path: '{{ cert_private }}'
+
+    - name: Generate selfsigned cert
+      become: true
+      community.crypto.x509_certificate:
+        path: '{{ cert_public }}'
+        privatekey_path: '{{ cert_private }}'
+        provider: selfsigned
+
+    - name: Create htpasswd
+      become: true
+      ansible.builtin.shell:
+        cmd: |
+          docker run \
+          --entrypoint htpasswd \
+          httpd:2 -Bbn {{ REGISTRY_USER }} {{ REGISTRY_PASSWORD }} > '{{ auth_file }}' 
+
+    - name: Run docker registry # run only if not already started
+      ansible.builtin.shell: |
+        docker ps | grep registry || docker run -d \
+          -p 5000:5000 \
+          --restart=always \
+          --name registry \
+          -v /mnt/docker_registry:/var/lib/registry \
+          -v /etc/ssl/docker_registry:/certs \
+          -v /etc/docker/auth:/auth \
+          -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/public.pem \
+          -e REGISTRY_HTTP_TLS_KEY=/certs/private.key \
+          -e REGISTRY_AUTH=htpasswd \
+          -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+          -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+          registry:2
