@@ -1,0 +1,20 @@
+plugin: gcp_compute
+
+projects:
+  - "prefab-poetry-334607"
+
+regions:
+  - "europe-north1"
+
+hostnames:
+  - name
+
+filters:
+   - "labels.service_name = registry"
+
+groups:
+  group_registry: "'registry' in labels['service_name']"
+
+auth_kind: serviceaccount
+
+service_account_file: .gcp-creds.json

@@ -1,2 +1,8 @@
 .vagrant
 group_vars/all.yaml
+
+.terraform
+*.lock.hcl
+.gcp_ssh*
+.gcp-creds.json
+terraform.tfstate*
