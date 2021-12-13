@@ -6,8 +6,9 @@ projects:
 regions:
   - "europe-north1"
 
-hostnames:
-  - name
+# it works, but now is broken. Later I'll fix it
+# hostnames:
+#   - name
 
 filters:
    - "labels.service_name = registry"
