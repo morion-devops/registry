@@ -2,7 +2,7 @@
 # provider #
 ############
 provider "google" {
-  credentials = file(".gcp-creds.json")
+  credentials = file("../credentials/.gcp-creds.json")
 
   project = "prefab-poetry-334607"
   region  = "europe-north1"
@@ -13,7 +13,7 @@ provider "google" {
 # variables #
 #############
 variable "ssh_key_file_name" {
-  default = ".gcp_ssh.pub"
+  default = "../credentials/.gcp_ssh.pub"
 }
 
 ############

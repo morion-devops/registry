@@ -1,8 +1,6 @@
 .vagrant
-group_vars/all.yaml
-
 .terraform
-*.lock.hcl
-.gcp_ssh*
-.gcp-creds.json
+ansible/group_vars/all.yaml
 terraform.tfstate*
+*.lock.hcl
+credentials/

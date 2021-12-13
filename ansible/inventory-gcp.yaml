@@ -17,4 +17,4 @@ groups:
 
 auth_kind: serviceaccount
 
-service_account_file: .gcp-creds.json
+service_account_file: ../credentials/.gcp-creds.json
