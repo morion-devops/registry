@@ -27,6 +27,7 @@ resource "google_compute_instance" "registry" {
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
+      type  = "pd-standard"
     }
   }
 
