@@ -58,9 +58,10 @@
           httpd:2 -Bbn {{ REGISTRY_USER }} {{ REGISTRY_PASSWORD }} > '{{ auth_file }}' 
 
     - name: Run docker registry # run only if not already started
+      become: true
       ansible.builtin.shell: |
         docker ps | grep registry || docker run -d \
-          -p 5000:5000 \
+          -p 443:5000 \
           --restart=always \
           --name registry \
           -v /mnt/docker_registry:/var/lib/registry \
