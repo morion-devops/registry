@@ -44,6 +44,19 @@ resource "google_compute_instance" "registry" {
 
   network_interface {
     network = "default"
-    access_config {} // for external ip
+    access_config {
+      nat_ip = google_compute_address.registry.address
+      network_tier = "STANDARD"
+    }
   }
+}
+
+#############
+# addresses #
+#############
+resource "google_compute_address" "registry" {
+  region       = "europe-north1"
+  name         = "registry"
+  address_type = "EXTERNAL"
+  network_tier = "STANDARD"
 }
